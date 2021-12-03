@@ -67,7 +67,7 @@ impl TryFrom<&str> for Direction {
 }
 
 fn main() {
-    let file_content = fs::read_to_string("2021/2/insput.txt").expect("Cannot read input file");
+    let file_content = fs::read_to_string("2021/2/input.txt").expect("Cannot read input file");
     let commands: Vec<(Direction, u32)> = file_content
         .lines()
         .map(|line| {
