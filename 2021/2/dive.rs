@@ -1,5 +1,5 @@
+use common::print_solution;
 use std::fs;
-use std::io;
 
 use std::convert::TryFrom;
 
@@ -82,8 +82,7 @@ fn main() {
         })
         .collect();
 
-    let print_result =
-        |part, (horizontal, depth)| println!("Part{} result {}", part, horizontal * depth);
+    let print_result = |part, (horizontal, depth)| print_solution(part, horizontal * depth);
     print_result(1, part1(&commands));
     print_result(2, part2(&commands));
 }

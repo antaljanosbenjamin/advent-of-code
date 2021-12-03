@@ -9,5 +9,8 @@ edition = "2021"
 name = "2021_2_dive"
 path = "2021/2/dive.rs"
 
+[lib]
+name = "common"
+path = "common/lib.rs"
 
 [dependencies]
