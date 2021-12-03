@@ -1,3 +1,8 @@
-pub fn print_solution(part_number: u32, solution: u32) {
+use std::fmt::Display;
+
+pub fn print_solution<T>(part_number: u32, solution: T)
+where
+    T: Display,
+{
     println!("Part{} result is {}", part_number, solution);
 }

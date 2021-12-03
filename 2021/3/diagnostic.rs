@@ -2,7 +2,7 @@ use common::print_solution;
 use std::convert::TryInto;
 use std::fs;
 
-fn part1(lines: &Vec<&str>) -> u32 {
+fn part1(lines: &Vec<&str>) -> usize {
     let bit_count = lines[0].len();
 
     let (line_count, one_counts) = lines.iter().fold(
@@ -27,8 +27,8 @@ fn part1(lines: &Vec<&str>) -> u32 {
         })
         .collect::<String>();
 
-    let gamma = u32::from_str_radix(&gamma_str, 2).expect("Wrong number");
-    let max_value = 2u32.pow(bit_count.try_into().unwrap()) - 1;
+    let gamma = usize::from_str_radix(&gamma_str, 2).expect("Wrong number");
+    let max_value = 2usize.pow(bit_count.try_into().unwrap()) - 1;
     let epsilon = max_value - gamma;
     let solution = gamma * epsilon;
 
