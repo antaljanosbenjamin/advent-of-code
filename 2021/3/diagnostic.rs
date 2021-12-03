@@ -4,17 +4,20 @@ use std::fs;
 
 fn part1(lines: &Vec<&str>) -> usize {
     let bit_count = lines[0].len();
+    let line_count = lines.len();
 
-    let (line_count, one_counts) = lines.iter().fold(
-        (0u32, vec![0u32; bit_count]),
-        |(line_count, mut one_counts), line| {
+    let one_counts = lines
+        .iter()
+        .fold(vec![0usize; bit_count], |mut one_counts, line| {
             line.chars()
-                .enumerate()
-                .filter(|(_index, char)| *char == '1')
-                .for_each(|(index, _char)| one_counts[index] += 1);
-            (line_count + 1, one_counts)
-        },
-    );
+                .zip(one_counts.iter_mut())
+                .for_each(|(char, counter)| {
+                    if char == '1' {
+                        *counter += 1
+                    }
+                });
+            one_counts
+        });
 
     let gamma_str = one_counts
         .iter()
