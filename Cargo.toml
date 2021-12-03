@@ -9,6 +9,10 @@ edition = "2021"
 name = "2021_2_dive"
 path = "2021/2/dive.rs"
 
+[[bin]]
+name = "2021_3_diagnostic"
+path = "2021/3/diagnostic.rs"
+
 [lib]
 name = "common"
 path = "common/lib.rs"
