@@ -95,7 +95,7 @@ fn part2(lines: &Vec<&str>, one_counts: &Vec<usize>) -> usize {
 
 fn main() {
     let file_content = fs::read_to_string("2021/3/input.txt").expect("Cannot read input file");
-    let lines = file_content.lines().map(|line| line).collect();
+    let lines = file_content.lines().collect();
     let one_counts = count_ones(&lines);
 
     print_solution(1, part1(lines.len(), &one_counts));
