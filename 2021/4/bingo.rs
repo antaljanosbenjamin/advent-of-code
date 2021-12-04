@@ -1,4 +1,9 @@
-use std::{collections::HashMap, fmt::Display, fs, iter::Zip};
+use std::{
+    collections::{HashMap, HashSet},
+    fmt::Display,
+    fs,
+    iter::Zip,
+};
 
 use common::print_solution;
 
@@ -23,6 +28,7 @@ fn print<T: Display>(board: &Board<T>) {
         println!("]");
     }
 }
+
 struct BoardRowIterator<'a, T> {
     board: &'a Board<T>,
     row: usize,
@@ -187,12 +193,22 @@ impl<'a, T: 'a> IterableBoard<'a, T> for Board<T> {
 
 type NumberBoard = Board<usize>;
 type MarkBoard = Board<bool>;
+type Lookup = HashMap<usize, Vec<(usize /*board*/, usize /*flat_index*/)>>;
 
-fn part1(guesses: &Vec<usize>, num_boards: &Vec<NumberBoard>) -> usize {
-    let mut mark_boards = vec![MarkBoard::default(); num_boards.len()];
-    let lookup = num_boards.iter().enumerate().fold(
-        HashMap::<usize, Vec<(usize /*board*/, usize /*flat_index*/)>>::new(),
-        |mut lookup, (board_index, board)| {
+fn calculate_board_score(num_board: &Board<usize>, mark_board: &Board<bool>) -> usize {
+    num_board
+        .iter()
+        .zip(mark_board.iter())
+        .filter(|&(_num, mark)| !mark)
+        .map(|(num, _mark)| num)
+        .sum::<usize>()
+}
+
+fn build_lookup(num_boards: &Vec<Board<usize>>) -> Lookup {
+    num_boards
+        .iter()
+        .enumerate()
+        .fold(Lookup::default(), |mut lookup, (board_index, board)| {
             board.iter().enumerate().for_each(|(flat_index, num)| {
                 if !lookup.contains_key(num) {
                     lookup.insert(*num, Vec::<(usize, usize)>::new());
@@ -200,8 +216,11 @@ fn part1(guesses: &Vec<usize>, num_boards: &Vec<NumberBoard>) -> usize {
                 lookup.get_mut(num).unwrap().push((board_index, flat_index));
             });
             lookup
-        },
-    );
+        })
+}
+
+fn part1(guesses: &Vec<usize>, num_boards: &Vec<NumberBoard>, lookup: &Lookup) -> usize {
+    let mut mark_boards = vec![MarkBoard::default(); num_boards.len()];
 
     for guess in guesses {
         if let Some(affect_fields) = lookup.get(guess) {
@@ -211,6 +230,45 @@ fn part1(guesses: &Vec<usize>, num_boards: &Vec<NumberBoard>) -> usize {
             let mut winning_board = 0;
             let completed = affect_fields.iter().any(|&(board_index, flat_index)| {
                 let board = &mark_boards[board_index];
+                let (row_completed, col_completed) = board
+                    .iter_zipped_by_flat_index(flat_index)
+                    .unwrap()
+                    .fold((true, true), |(row_res, col_res), (row, col)| {
+                        (row_res && *row, col_res && *col)
+                    });
+
+                let won = row_completed || col_completed;
+                if won {
+                    winning_board = board_index;
+                }
+                won
+            });
+            if completed {
+                let board_score =
+                    calculate_board_score(&num_boards[winning_board], &mark_boards[winning_board]);
+                return board_score * guess;
+            }
+        }
+    }
+    unreachable!()
+}
+
+fn part2(guesses: &Vec<usize>, num_boards: &Vec<NumberBoard>, lookup: &Lookup) -> usize {
+    let mut mark_boards = vec![MarkBoard::default(); num_boards.len()];
+
+    let mut winning_boards = HashSet::<usize>::new();
+    let mut last_board_to_win = 0;
+    for guess in guesses {
+        if let Some(affect_fields) = lookup.get(guess) {
+            affect_fields.iter().for_each(|&(board, flat_index)| {
+                mark_boards[board][flat_index] = true;
+            });
+
+            affect_fields.iter().for_each(|&(board_index, flat_index)| {
+                if winning_boards.contains(&board_index) {
+                    return;
+                }
+                let board = &mark_boards[board_index];
                 let won = board
                     .iter_row_by_flat_index(flat_index)
                     .unwrap()
@@ -219,22 +277,21 @@ fn part1(guesses: &Vec<usize>, num_boards: &Vec<NumberBoard>) -> usize {
                         .iter_col_by_flat_index_(flat_index)
                         .unwrap()
                         .all(|&mark| mark);
-                winning_board = board_index;
-                won
+                if won {
+                    winning_boards.insert(board_index);
+                    last_board_to_win = board_index;
+                }
             });
-            if completed {
-                let board_score = num_boards[winning_board]
-                    .iter()
-                    .zip(mark_boards[winning_board].iter())
-                    .filter(|&(_num, mark)| !mark)
-                    .map(|(num, _mark)| num)
-                    .sum::<usize>();
-                return board_score * guess;
-            }
+        }
+        if winning_boards.len() == mark_boards.len() {
+            let board_score = calculate_board_score(
+                &num_boards[last_board_to_win],
+                &mark_boards[last_board_to_win],
+            );
+            return board_score * guess;
         }
     }
-
-    0
+    unreachable!()
 }
 
 fn main() {
@@ -263,5 +320,8 @@ fn main() {
         .zip(boards.iter_mut())
         .for_each(|(chunk, board)| board.copy_from_slice(chunk));
 
-    print_solution(1, part1(&guesses, &boards));
+    let lookup = build_lookup(&boards);
+
+    print_solution(1, part1(&guesses, &boards, &lookup));
+    print_solution(2, part2(&guesses, &boards, &lookup));
 }
