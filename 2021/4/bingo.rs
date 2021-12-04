@@ -1,4 +1,6 @@
-use std::fs;
+use std::{collections::HashMap, fmt::Display, fs, iter::Zip};
+
+use common::print_solution;
 
 const WIDTH: usize = 5;
 const HEIGHT: usize = 5;
@@ -6,6 +8,21 @@ const BOARD_SIZE: usize = WIDTH * HEIGHT;
 
 type Board<T> = [T; BOARD_SIZE];
 
+#[allow(dead_code)]
+fn print<T: Display>(board: &Board<T>) {
+    for row in 0..HEIGHT {
+        print!("[");
+        let first = row * WIDTH;
+        for col in 0..WIDTH {
+            print!(
+                "{}{}",
+                board[first + col],
+                if col == WIDTH - 1 { "" } else { "," }
+            );
+        }
+        println!("]");
+    }
+}
 struct BoardRowIterator<'a, T> {
     board: &'a Board<T>,
     row: usize,
@@ -114,6 +131,38 @@ trait IterableBoard<'a, T: 'a> {
     fn iter_col(&'a self, row_index: usize) -> Option<Self::ColumnIterator>;
     fn iter_rows(&'a self) -> Self::RowsIterator;
     fn iter_cols(&'a self) -> Self::ColumnsIterator;
+
+    fn flat_index_to_row(flat_index: usize) -> usize {
+        flat_index / WIDTH
+    }
+
+    fn flat_index_to_col(flat_index: usize) -> usize {
+        flat_index % WIDTH
+    }
+
+    fn iter_row_by_flat_index(&'a self, flat_index: usize) -> Option<Self::RowIterator> {
+        self.iter_row(Self::flat_index_to_row(flat_index))
+    }
+
+    fn iter_col_by_flat_index_(&'a self, flat_index: usize) -> Option<Self::ColumnIterator> {
+        self.iter_col(Self::flat_index_to_col(flat_index))
+    }
+
+    fn iter_zipped_by_flat_index(
+        &'a self,
+        flat_index: usize,
+    ) -> Option<
+        Zip<
+            <Self as IterableBoard<'a, T>>::RowIterator,
+            <Self as IterableBoard<'a, T>>::ColumnIterator,
+        >,
+    > {
+        self.iter_row_by_flat_index(flat_index)
+            .and_then(|row_iter| {
+                self.iter_col_by_flat_index_(flat_index)
+                    .and_then(|col_iter| Some(row_iter.zip(col_iter)))
+            })
+    }
 }
 
 impl<'a, T: 'a> IterableBoard<'a, T> for Board<T> {
@@ -141,13 +190,55 @@ type MarkBoard = Board<bool>;
 
 fn part1(guesses: &Vec<usize>, num_boards: &Vec<NumberBoard>) -> usize {
     let mut mark_boards = vec![MarkBoard::default(); num_boards.len()];
+    let lookup = num_boards.iter().enumerate().fold(
+        HashMap::<usize, Vec<(usize /*board*/, usize /*flat_index*/)>>::new(),
+        |mut lookup, (board_index, board)| {
+            board.iter().enumerate().for_each(|(flat_index, num)| {
+                if !lookup.contains_key(num) {
+                    lookup.insert(*num, Vec::<(usize, usize)>::new());
+                }
+                lookup.get_mut(num).unwrap().push((board_index, flat_index));
+            });
+            lookup
+        },
+    );
+
+    for guess in guesses {
+        if let Some(affect_fields) = lookup.get(guess) {
+            affect_fields.iter().for_each(|&(board, flat_index)| {
+                mark_boards[board][flat_index] = true;
+            });
+            let mut winning_board = 0;
+            let completed = affect_fields.iter().any(|&(board_index, flat_index)| {
+                let board = &mark_boards[board_index];
+                let won = board
+                    .iter_row_by_flat_index(flat_index)
+                    .unwrap()
+                    .all(|&mark| mark)
+                    || board
+                        .iter_col_by_flat_index_(flat_index)
+                        .unwrap()
+                        .all(|&mark| mark);
+                winning_board = board_index;
+                won
+            });
+            if completed {
+                let board_score = num_boards[winning_board]
+                    .iter()
+                    .zip(mark_boards[winning_board].iter())
+                    .filter(|&(_num, mark)| !mark)
+                    .map(|(num, _mark)| num)
+                    .sum::<usize>();
+                return board_score * guess;
+            }
+        }
+    }
 
     0
 }
 
 fn main() {
-    let file_content =
-        fs::read_to_string("2021/4/input_small.txt").expect("Cannot read input file");
+    let file_content = fs::read_to_string("2021/4/input.txt").expect("Cannot read input file");
     let guesses = file_content
         .lines()
         .next()
@@ -172,9 +263,5 @@ fn main() {
         .zip(boards.iter_mut())
         .for_each(|(chunk, board)| board.copy_from_slice(chunk));
 
-    println!("{:?}", guesses);
-    println!("{:?}", boards[0]);
-    boards[0]
-        .iter_cols()
-        .for_each(|row_it| println!("{:?}", row_it.collect::<Vec<&usize>>()));
+    print_solution(1, part1(&guesses, &boards));
 }
