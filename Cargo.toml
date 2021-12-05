@@ -17,6 +17,10 @@ path = "2021/3/diagnostic.rs"
 name = "2021_4_bingo"
 path = "2021/4/bingo.rs"
 
+[[bin]]
+name = "2021_5_hydrotermal_venture"
+path = "2021/5/hydrotermal_venture.rs"
+
 [lib]
 name = "common"
 path = "common/lib.rs"
