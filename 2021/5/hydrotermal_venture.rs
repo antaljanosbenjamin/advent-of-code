@@ -189,16 +189,8 @@ fn main() {
         .iter()
         .filter(|segment| segment.parallel_to_axles())
         .for_each(|s| {
-            if s.vertical() {
-                let x = s.from().x();
-                for y in s.min_y()..=s.max_y() {
-                    ocean_floor[x][y] += 1
-                }
-            } else {
-                let y = s.from().y();
-                for x in s.min_x()..=s.max_x() {
-                    ocean_floor[x][y] += 1
-                }
+            for (x, y) in s.iter() {
+                ocean_floor[x][y] += 1
             }
         });
 
