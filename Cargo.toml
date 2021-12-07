@@ -25,6 +25,10 @@ path = "2021/5/hydrotermal_venture.rs"
 name = "2021_6_lanternfish"
 path = "2021/6/lanternfish.rs"
 
+[[bin]]
+name = "2021_7_the_treachery_of_whales"
+path = "2021/7/the_treachery_of_whales.rs"
+
 [lib]
 name = "common"
 path = "common/lib.rs"
