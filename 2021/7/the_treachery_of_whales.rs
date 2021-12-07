@@ -11,10 +11,10 @@ fn distance(lhs: usize, rhs: usize) -> usize {
 }
 
 fn min_max_pos(crabs: &HashMap</*pos*/ usize, /*count*/ usize>) -> (/*min*/ usize, /*max*/ usize) {
-    let positions = crabs.iter().map(|(pos, _count)| pos);
-    let min_pos = *positions.clone().min().unwrap();
-    let max_pos = *positions.max().unwrap();
-    (min_pos, max_pos)
+    (
+        *crabs.keys().clone().min().unwrap(),
+        *crabs.keys().max().unwrap(),
+    )
 }
 
 fn get_total_fuel(
