@@ -29,6 +29,14 @@ path = "2021/6/lanternfish.rs"
 name = "2021_7_the_treachery_of_whales"
 path = "2021/7/the_treachery_of_whales.rs"
 
+[[bin]]
+name = "2021_8_seven_segment_search"
+path = "2021/8/seven_segment_search.rs"
+
+[[bin]]
+name = "2021_9_smoke_basin"
+path = "2021/9/smoke_basin.rs"
+
 [lib]
 name = "common"
 path = "common/lib.rs"
