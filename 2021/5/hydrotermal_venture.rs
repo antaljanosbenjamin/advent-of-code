@@ -1,7 +1,7 @@
 use std::{
     cmp::Ordering,
     fs,
-    iter::{self, repeat, Zip},
+    iter::{repeat, Zip},
 };
 
 use common::print_solution;
