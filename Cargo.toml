@@ -37,6 +37,10 @@ path = "2021/8/seven_segment_search.rs"
 name = "2021_9_smoke_basin"
 path = "2021/9/smoke_basin.rs"
 
+[[bin]]
+name = "2021_10_syntax_scoring"
+path = "2021/10/syntax_scoring.rs"
+
 [lib]
 name = "common"
 path = "common/lib.rs"
