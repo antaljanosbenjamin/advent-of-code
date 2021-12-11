@@ -40,6 +40,9 @@ path = "2021/9/smoke_basin.rs"
 [[bin]]
 name = "2021_10_syntax_scoring"
 path = "2021/10/syntax_scoring.rs"
+[[bin]]
+name = "2021_11_dumbo_octopus"
+path = "2021/11/dumbo_octopus.rs"
 
 [lib]
 name = "common"
