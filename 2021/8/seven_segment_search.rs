@@ -4,7 +4,7 @@ use std::{
     ops::{Index, Sub},
 };
 
-use common::print_solution;
+use common::utility::print_solution;
 
 fn part1(inputs: &Vec<(Vec<HashSet<char>>, Vec<HashSet<char>>)>) -> usize {
     inputs.iter().fold(0usize, |acc, (_signals, outputs)| {

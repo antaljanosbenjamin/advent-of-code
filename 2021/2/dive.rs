@@ -1,4 +1,4 @@
-use common::print_solution;
+use common::utility::print_solution;
 use std::fs;
 
 use std::convert::TryFrom;

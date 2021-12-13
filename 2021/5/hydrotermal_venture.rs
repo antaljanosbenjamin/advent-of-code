@@ -4,49 +4,12 @@ use std::{
     iter::{repeat, Zip},
 };
 
-use common::print_solution;
+use common::coords::{Coords, CoordsImpl};
+use common::utility::print_solution;
 
 const ARROW: &'static str = " -> ";
 
-// +--> x
-// |
-// |
-// V
-// y
-
-// [x, y]
-type Coords = [usize; 2];
 type Segment = [Coords; 2];
-
-trait CoordsImpl {
-    fn x(&self) -> usize;
-    fn y(&self) -> usize;
-
-    fn horizontal(&self, other: &Self) -> bool;
-    fn vertical(&self, other: &Self) -> bool;
-
-    fn parallel_to_axles(&self, other: &Self) -> bool {
-        return self.horizontal(other) || self.vertical(other);
-    }
-}
-
-impl CoordsImpl for Coords {
-    fn x(&self) -> usize {
-        self[0]
-    }
-
-    fn y(&self) -> usize {
-        self[1]
-    }
-
-    fn horizontal(&self, other: &Self) -> bool {
-        self.y() == other.y()
-    }
-
-    fn vertical(&self, other: &Self) -> bool {
-        self.x() == other.x()
-    }
-}
 
 trait SegmentImpl {
     fn from(&self) -> &Coords;

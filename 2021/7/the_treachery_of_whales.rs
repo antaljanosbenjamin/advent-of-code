@@ -1,14 +1,6 @@
 use std::{collections::HashMap, fs};
 
-use common::print_solution;
-
-fn distance(lhs: usize, rhs: usize) -> usize {
-    if lhs > rhs {
-        lhs - rhs
-    } else {
-        rhs - lhs
-    }
-}
+use common::utility::{distance, print_solution};
 
 fn min_max_pos(crabs: &HashMap</*pos*/ usize, /*count*/ usize>) -> (/*min*/ usize, /*max*/ usize) {
     (

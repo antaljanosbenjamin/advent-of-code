@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 use std::fs;
 
-use common::print_solution;
+use common::utility::print_solution;
 
 fn count_ones(lines: &Vec<&str>) -> Vec<usize> {
     let bit_count = lines[0].len();

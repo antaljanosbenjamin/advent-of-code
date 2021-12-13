@@ -1,6 +1,6 @@
 use std::fs;
 
-use common::print_solution;
+use common::utility::print_solution;
 
 fn are_pairs(lhs: char, rhs: char) -> bool {
     match (lhs, rhs) {

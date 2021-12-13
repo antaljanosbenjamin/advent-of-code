@@ -5,7 +5,7 @@ use std::{
     iter::Zip,
 };
 
-use common::print_solution;
+use common::utility::print_solution;
 
 const WIDTH: usize = 5;
 const HEIGHT: usize = 5;

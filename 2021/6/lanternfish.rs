@@ -1,6 +1,6 @@
 use std::{collections::HashMap, fs};
 
-use common::print_solution;
+use common::utility::print_solution;
 
 fn lanternfishes_after_days(
     fishes: &HashMap<usize /*days*/, usize /*count*/>,

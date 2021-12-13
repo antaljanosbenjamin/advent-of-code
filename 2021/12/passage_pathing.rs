@@ -3,7 +3,7 @@ use std::{
     fs,
 };
 
-use common::print_solution;
+use common::utility::print_solution;
 
 fn is_full_uppercase(start: &str) -> bool {
     start.chars().all(|c| c.is_uppercase())
@@ -67,16 +67,62 @@ fn bfs2(
     res
 }
 
-fn part1(start: usize, end: usize, routes: &HashMap<usize, (bool, Vec<usize>, &str)>) -> usize {
-    bfs(routes, start, end, &mut HashSet::new())
+fn part1(start: usize, end: usize, cave_infos: &HashMap<usize, (bool, Vec<usize>, &str)>) -> usize {
+    bfs(cave_infos, start, end, &mut HashSet::new())
+}
+
+fn part1_unwinded(
+    start: usize,
+    end: usize,
+    cave_infos: &HashMap<usize, (bool /*is_big*/, Vec<usize>, &str)>,
+) -> usize {
+    let mut visited = HashSet::new();
+    let mut stack = Vec::new();
+    let mut caves_to_visit = vec![start];
+    let mut res = 1;
+    while !caves_to_visit.is_empty() {
+        let cave = caves_to_visit.pop().unwrap();
+        let cave_info = cave_infos.get(&cave).unwrap();
+        println!("Cave: {} ({})", cave_info.2, cave);
+        if cave == end {
+            res += 1;
+            println!("\tend reached");
+            continue;
+        }
+
+        if !cave_info.0 {
+            println!("\tPushing cave to visited and stack");
+            visited.insert(cave);
+            stack.push(cave);
+        }
+
+        let mut next_caves = cave_info
+            .1
+            .iter()
+            .filter(|c| !visited.contains(c))
+            .map(|c| *c)
+            .collect::<Vec<usize>>();
+
+        println!("\tNext caves: {:?}", next_caves);
+        if !next_caves.is_empty() {
+            caves_to_visit.append(&mut next_caves);
+            println!("\tContinue");
+            continue;
+        }
+
+        println!("\tRemoving cave from visited and stack");
+        let cave_to_return_from = stack.pop().unwrap();
+        visited.remove(&cave_to_return_from);
+    }
+    res
 }
 
 fn part2(
     start: usize,
     end: usize,
-    routes: &HashMap<usize, (bool /*is_big*/, Vec<usize>, &str)>,
+    cave_infos: &HashMap<usize, (bool /*is_big*/, Vec<usize>, &str)>,
 ) -> usize {
-    bfs2(routes, start, start, end, &mut HashSet::new(), None)
+    bfs2(cave_infos, start, start, end, &mut HashSet::new(), None)
 }
 
 fn main() {
@@ -125,5 +171,6 @@ fn main() {
     let start = *caves.get("start").unwrap();
     let end = *caves.get("end").unwrap();
     print_solution(1, part1(start, end, &cave_infos));
+    print_solution(1, part1_unwinded(start, end, &cave_infos));
     print_solution(2, part2(start, end, &cave_infos));
 }

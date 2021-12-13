@@ -1,6 +1,6 @@
 use std::{collections::HashSet, fs};
 
-use common::print_solution;
+use common::utility::print_solution;
 
 const NEIGHBOR_OFFSETS: [(i8, i8); 8] = [
     (-1, -1),

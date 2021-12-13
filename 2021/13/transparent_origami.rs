@@ -1,59 +1,13 @@
-use std::{
-    collections::HashSet,
-    fs,
-    io::{BufWriter, Write},
-};
+use std::{collections::HashSet, fs};
 
-use common::print_solution;
+use common::coords::Coords;
+use common::utility::{distance, print_solution};
 
-fn distance(lhs: usize, rhs: usize) -> usize {
-    if lhs > rhs {
-        lhs - rhs
-    } else {
-        rhs - lhs
-    }
-}
-
-// +--> x
-// |
-// |
-// V
-// y
-
-// [x, y]
-type Coords = [usize; 2];
-
-trait CoordsImpl {
-    fn x(&self) -> usize;
-    fn y(&self) -> usize;
-
-    fn horizontal(&self, other: &Self) -> bool;
-    fn vertical(&self, other: &Self) -> bool;
-
-    fn parallel_to_axles(&self, other: &Self) -> bool {
-        return self.horizontal(other) || self.vertical(other);
-    }
-
+trait FoldableCoordsImpl {
     fn fold(&self, line: &Self) -> Self;
 }
 
-impl CoordsImpl for Coords {
-    fn x(&self) -> usize {
-        self[0]
-    }
-
-    fn y(&self) -> usize {
-        self[1]
-    }
-
-    fn horizontal(&self, other: &Self) -> bool {
-        self.y() == other.y()
-    }
-
-    fn vertical(&self, other: &Self) -> bool {
-        self.x() == other.x()
-    }
-
+impl<T: common::coords::CoordsImpl> FoldableCoordsImpl for T {
     fn fold(&self, line: &Self) -> Self {
         assert!(line.x() == 0 || line.y() == 0);
 
@@ -64,10 +18,10 @@ impl CoordsImpl for Coords {
                 fold - distance(coord, fold)
             }
         };
-        [
+        Self::new(
             fold_coord(self.x(), line.x()),
             fold_coord(self.y(), line.y()),
-        ]
+        )
     }
 }
 
