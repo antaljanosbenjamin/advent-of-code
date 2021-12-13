@@ -49,6 +49,10 @@ path = "2021/11/dumbo_octopus.rs"
 name = "2021_12_passage_pathing"
 path = "2021/12/passage_pathing.rs"
 
+[[bin]]
+name = "2021_13_transparent_origami"
+path = "2021/13/transparent_origami.rs"
+
 [lib]
 name = "common"
 path = "common/lib.rs"
