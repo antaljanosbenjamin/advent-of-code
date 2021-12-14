@@ -25,20 +25,23 @@ fn replace_one_step(formula: &str, insertion_pairs: &HashMap<(char, char), char>
         .collect::<String>()
 }
 
+const PART1_STEPS: usize = 10;
+const PART2_STEPS: usize = 40;
+
 // Naive method
 fn part1(formula_str: &str, insertion_pairs: &HashMap<(char, char), char>) -> usize {
     let mut formula = formula_str.to_string();
-    for _i in 0..10 {
+    for _i in 0..PART1_STEPS {
         formula = replace_one_step(&formula, &insertion_pairs);
     }
 
-    let part1_counters: HashMap<char, usize> =
-        formula.chars().fold(HashMap::new(), |mut counters, c| {
-            *counters.entry(c).or_default() += 1;
-            counters
-        });
-    let min = part1_counters.values().min().unwrap();
-    let max = part1_counters.values().max().unwrap();
+    let counters: HashMap<char, usize> = formula.chars().fold(HashMap::new(), |mut counters, c| {
+        *counters.entry(c).or_default() += 1;
+        counters
+    });
+
+    let min = counters.values().min().unwrap();
+    let max = counters.values().max().unwrap();
     max - min
 }
 
@@ -91,8 +94,70 @@ fn part2(formula_str: &str, insertion_pairs: &HashMap<(char, char), char>) -> us
     max - min
 }
 
+fn step_one(
+    pairs: &HashMap<(char, char), usize>,
+    insertion_pairs: &HashMap<(char, char), char>,
+) -> HashMap<(char, char), usize> {
+    pairs
+        .iter()
+        .fold(HashMap::new(), |mut acc, (&(a, b), &count)| {
+            if let Some(&new_char) = insertion_pairs.get(&(a, b)) {
+                *acc.entry((a, new_char)).or_default() += count;
+                *acc.entry((new_char, b)).or_default() += count;
+            }
+            acc
+        })
+}
+
+// After opening the subreddit and seeing the lanternfish PTSD posts, it popped...
+fn count_n_step_efficient(
+    formula_str: &str,
+    insertion_pairs: &HashMap<(char, char), char>,
+    steps: usize,
+) -> usize {
+    let mut pairs: HashMap<(char, char), usize> = formula_str
+        .chars()
+        .zip(formula_str.chars().skip(1))
+        .fold(HashMap::new(), |mut acc, (a, b)| {
+            *acc.entry((a, b)).or_default() += 1;
+            acc
+        });
+
+    for _i in 0..steps {
+        pairs = step_one(&pairs, insertion_pairs);
+    }
+
+    let mut counters = pairs.iter().fold(
+        HashMap::<char, usize>::new(),
+        |mut acc, (&(a, b), &count)| {
+            *acc.entry(a).or_default() += count;
+            *acc.entry(b).or_default() += count;
+            acc
+        },
+    );
+
+    *counters
+        .entry(formula_str.chars().next().unwrap())
+        .or_default() += 1;
+    *counters
+        .entry(formula_str.chars().rev().next().unwrap())
+        .or_default() += 1;
+    let min = counters.values().min().unwrap();
+    let max = counters.values().max().unwrap();
+    (max - min) / 2
+}
+
+fn part1_efficient(formula_str: &str, insertion_pairs: &HashMap<(char, char), char>) -> usize {
+    count_n_step_efficient(formula_str, insertion_pairs, PART1_STEPS)
+}
+
+fn part2_efficient(formula_str: &str, insertion_pairs: &HashMap<(char, char), char>) -> usize {
+    count_n_step_efficient(formula_str, insertion_pairs, PART2_STEPS)
+}
+
 fn main() {
-    let file_content = fs::read_to_string("2021/14/input.txt").expect("Cannot read input file");
+    let file_content =
+        fs::read_to_string("2021/14/input_small.txt").expect("Cannot read input file");
     let insertion_pairs = file_content
         .lines()
         .skip(2)
@@ -116,6 +181,8 @@ fn main() {
         .expect("Unexpected input")
         .trim();
 
+    print_solution(1, part1_efficient(formula, &insertion_pairs));
     print_solution(1, part1(formula, &insertion_pairs));
+    print_solution(2, part2_efficient(formula, &insertion_pairs));
     print_solution(2, part2(formula, &insertion_pairs));
 }
