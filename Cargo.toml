@@ -61,6 +61,10 @@ path = "2021/14/extended_polymerization.rs"
 name = "2021_15_chiton"
 path = "2021/15/chiton.rs"
 
+[[bin]]
+name = "2021_16_packet_decoder"
+path = "2021/16/packet_decoder.rs"
+
 [lib]
 name = "common"
 path = "common/lib.rs"
