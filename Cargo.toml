@@ -57,6 +57,10 @@ path = "2021/13/transparent_origami.rs"
 name = "2021_14_extended_polymerization"
 path = "2021/14/extended_polymerization.rs"
 
+[[bin]]
+name = "2021_15_chiton"
+path = "2021/15/chiton.rs"
+
 [lib]
 name = "common"
 path = "common/lib.rs"
