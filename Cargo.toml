@@ -65,6 +65,10 @@ path = "2021/15/chiton.rs"
 name = "2021_16_packet_decoder"
 path = "2021/16/packet_decoder.rs"
 
+[[bin]]
+name = "2021_17_trick_shot"
+path = "2021/17/trick_shot.rs"
+
 [lib]
 name = "common"
 path = "common/lib.rs"

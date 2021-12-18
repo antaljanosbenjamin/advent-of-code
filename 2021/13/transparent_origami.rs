@@ -7,7 +7,7 @@ trait FoldableCoordsImpl {
     fn fold(&self, line: &Self) -> Self;
 }
 
-impl<T: common::coords::CoordsImpl> FoldableCoordsImpl for T {
+impl<T: Eq, C: common::coords::CoordsImpl<T = T>> FoldableCoordsImpl for C {
     fn fold(&self, line: &Self) -> Self {
         assert!(line.x() == 0 || line.y() == 0);
 
