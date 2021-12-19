@@ -67,8 +67,8 @@ name = "2021_17_trick_shot"
 path = "2021/17/trick_shot.rs"
 
 [[bin]]
-name = "2021_18_main"
-path = "2021/18/main.rs"
+name = "2021_18_snailfish"
+path = "2021/18/snailfish.rs"
 
 [lib]
 name = "common"
